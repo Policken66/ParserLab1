@@ -58,8 +58,20 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
+   <addaction name="action_start"/>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <action name="action_start">
+   <property name="text">
+    <string>Запуск</string>
+   </property>
+   <property name="toolTip">
+    <string>Запуск парсера</string>
+   </property>
+   <property name="menuRole">
+    <enum>QAction::MenuRole::NoRole</enum>
+   </property>
+  </action>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <resources>
