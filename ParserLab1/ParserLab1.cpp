@@ -2,6 +2,8 @@
 
 #include "ParserLab1.h"
 #include "Token.h"
+#include <ErrorHandler.h>
+#include <Lexer.h>
 
 ParserLab1::ParserLab1(QWidget *parent)
     : QMainWindow(parent)
@@ -16,19 +18,35 @@ ParserLab1::ParserLab1(QWidget *parent)
 ParserLab1::~ParserLab1()
 {}
 
-void ParserLab1::_action_start_triggered() {
-    QVector<Token> test_tokens = {
-        Token(TokenType::COUT, "cout", 0),
-        Token(TokenType::OPERATOR, "<<", 5),
-        Token(TokenType::STRING, "Hello world", 8),
-        Token(TokenType::OPERATOR, "<<", 21),
-        Token(TokenType::IDENTIFIER, "x", 24),
-        Token(TokenType::SEMICOLON, ";", 25)
-    };
 
-    qDebug() << "Тестовые токены:";
-    for (const auto& token : test_tokens) {
-        TokenUtils::print_token(token);
+QString test_Lexer(const QString& test_name, const QString& input);
+
+void ParserLab1::_action_start_triggered() {
+    qDebug() << "=== a Lexer ===";
+    QString test = ui.plainTextEdit_input->toPlainText();
+    // Test cases
+    QString result = test_Lexer("Test", test);
+    ui.plainTextEdit_log->setPlainText(result);
+}
+
+QString test_Lexer(const QString& test_name, const QString& input) {
+    QString result;
+
+    try {
+        Lexer lexer(input);
+        QVector<Token> tokens = lexer.tokenize();
+
+        for (const auto& token : tokens) {
+            TokenUtils::print_token(token);
+            result += TokenUtils::token_to_string(token);
+        }
+        result += "Succes!";
     }
-    qDebug() << "Токены напечатаны!";
+    catch (const ErrorHandler::SyntaxError& e) {
+        result += "Error: ";
+        result += e.what();
+        result += "\n";
+    }
+
+    return result;
 }
