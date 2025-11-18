@@ -4,6 +4,7 @@
 #include "Token.h"
 #include <ErrorHandler.h>
 #include <Lexer.h>
+#include <Parser.h>
 
 ParserLab1::ParserLab1(QWidget *parent)
     : QMainWindow(parent)
@@ -18,35 +19,23 @@ ParserLab1::ParserLab1(QWidget *parent)
 ParserLab1::~ParserLab1()
 {}
 
-
-QString test_Lexer(const QString& test_name, const QString& input);
-
 void ParserLab1::_action_start_triggered() {
-    qDebug() << "=== a Lexer ===";
+    qDebug() << "=== Parser ===";
     QString test = ui.plainTextEdit_input->toPlainText();
-    // Test cases
-    QString result = test_Lexer("Test", test);
-    ui.plainTextEdit_log->setPlainText(result);
-}
-
-QString test_Lexer(const QString& test_name, const QString& input) {
-    QString result;
-
+    QString output = "";
     try {
-        Lexer lexer(input);
+        Lexer lexer(test);
         QVector<Token> tokens = lexer.tokenize();
 
-        for (const auto& token : tokens) {
-            TokenUtils::print_token(token);
-            result += TokenUtils::token_to_string(token);
-        }
-        result += "Succes!";
+        Parser parser(tokens);
+        bool success = parser.parse();
+        output = "Result: " + QString(success ? "SUCCESS" : "FAILED");
+        qDebug() << "Result:" << (success ? "SUCCESS" : "FAILED");
     }
     catch (const ErrorHandler::SyntaxError& e) {
-        result += "Error: ";
-        result += e.what();
-        result += "\n";
+        output = "Error: " + QString(e.what());
+        qDebug() << "Error:" << e.what();
     }
 
-    return result;
+    ui.plainTextEdit_log->setPlainText(output);
 }

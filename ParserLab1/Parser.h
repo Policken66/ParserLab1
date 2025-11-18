@@ -17,7 +17,6 @@ private:
 	// Методы для правил грамматики
 	void _parse_S();
 	void _parse_Output();
-	void _parse_List();
 	void _parse_Item();
 
 private:

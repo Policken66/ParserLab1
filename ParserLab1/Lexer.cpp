@@ -53,6 +53,7 @@ QVector<Token> Lexer::tokenize() {
 			}
 		}
 		else if (_current_char == '"') {
+			_advance();
 			QString str = _read_string();
 			tokens.append(Token(TokenType::STRING, str, token_start));
 		}
@@ -127,7 +128,7 @@ QString Lexer::_read_string() {
 	}
 	else {
 		// обработка ошибки должна быть
-		return result;
+		throw ErrorHandler::SyntaxError("Unclosed string literal", _position);
 	}
 
 	return result;

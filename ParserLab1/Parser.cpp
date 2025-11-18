@@ -1,5 +1,6 @@
 #include "Parser.h"
 #include <ErrorHandler.h>
+#include <Logger.h>
 
 Parser::Parser(const QVector<Token>& tokens): _tokens(tokens), _current_token_index(0) {
 	if (!_tokens.isEmpty()) {
@@ -54,26 +55,20 @@ void Parser::_parse_Item() {
 	}
 }
 
-// List -> Item | List << Item
-void Parser::_parse_List() {
-	qDebug() << "Parsing list starting at position" << _current_token.position;
 
-	// Первый элемент
-	_parse_Item();
-
-	// Последующие элементы с операторами <<
-	while (_current_token.type == TokenType::OPERATOR) {
-		_eat(TokenType::OPERATOR);
-		_parse_Item();
-	}
-}
-
-// Output -> cout List
+// Output -> cout << Item (<< Item)*
 void Parser::_parse_Output() {
 	qDebug() << "Parsing output statement at position" << _current_token.position;
 
 	_eat(TokenType::COUT);
-	_parse_List();
+
+	_eat(TokenType::OPERATOR);
+	_parse_Item();
+
+	while (_current_token.type == TokenType::OPERATOR) {
+		_eat(TokenType::OPERATOR);
+		_parse_Item();
+	}
 }
 
 // S -> Output ;
@@ -87,6 +82,7 @@ void Parser::_parse_S() {
 	if (_current_token.type != TokenType::END) {
 		throw ErrorHandler::SyntaxError(QString("Expected end of input"),
 								  _current_token.position);
+
 	}
 }
 
